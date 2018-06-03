@@ -1110,8 +1110,8 @@ p5.Renderer2D.prototype.resetMatrix = function() {
   return this;
 };
 
-p5.Renderer2D.prototype.rotate = function(rad) {
-  this.drawingContext.rotate(rad);
+p5.Renderer2D.prototype.rotate = function(angle) {
+  this.drawingContext.rotate(this._pInst._toRadians(angle));
 };
 
 p5.Renderer2D.prototype.scale = function(x, y) {

@@ -194,15 +194,15 @@ p5.prototype.resetMatrix = function() {
  */
 p5.prototype.rotate = function(angle, axis) {
   p5._validateParameters('rotate', arguments);
-  this._renderer.rotate(this._toRadians(angle), axis);
+  this._renderer.rotate(angle, axis);
   return this;
 };
 
 /**
- * Rotates around X axis.
+ * Rotates around X axis. WebGL mode only.
  * @method  rotateX
  * @param  {Number} angle the angle of rotation, specified in radians
- *                        or degrees, depending on current angleMode
+ *                        or degrees, depending on current <a href="#/p5/angleMode">angleMode</a>
  * @chainable
  * @example
  * <div modernizr='webgl'>
@@ -224,15 +224,15 @@ p5.prototype.rotate = function(angle, axis) {
 p5.prototype.rotateX = function(angle) {
   this._assert3d('rotateX');
   p5._validateParameters('rotateX', arguments);
-  this._renderer.rotateX(this._toRadians(angle));
+  this._renderer.rotateX(angle);
   return this;
 };
 
 /**
- * Rotates around Y axis.
+ * Rotates around Y axis. WebGL mode only.
  * @method rotateY
  * @param  {Number} angle the angle of rotation, specified in radians
- *                        or degrees, depending on current angleMode
+ *                        or degrees, depending on current <a href="#/p5/angleMode">angleMode</a>
  * @chainable
  * @example
  * <div modernizr='webgl'>
@@ -254,15 +254,15 @@ p5.prototype.rotateX = function(angle) {
 p5.prototype.rotateY = function(angle) {
   this._assert3d('rotateY');
   p5._validateParameters('rotateY', arguments);
-  this._renderer.rotateY(this._toRadians(angle));
+  this._renderer.rotateY(angle);
   return this;
 };
 
 /**
- * Rotates around Z axis. Webgl mode only.
+ * Rotates around Z axis. WebGL mode only.
  * @method rotateZ
  * @param  {Number} angle the angle of rotation, specified in radians
- *                        or degrees, depending on current angleMode
+ *                        or degrees, depending on current <a href="#/p5/angleMode">angleMode</a>
  * @chainable
  * @example
  * <div modernizr='webgl'>
@@ -284,7 +284,7 @@ p5.prototype.rotateY = function(angle) {
 p5.prototype.rotateZ = function(angle) {
   this._assert3d('rotateZ');
   p5._validateParameters('rotateZ', arguments);
-  this._renderer.rotateZ(this._toRadians(angle));
+  this._renderer.rotateZ(angle);
   return this;
 };
 
