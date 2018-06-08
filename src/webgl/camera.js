@@ -77,6 +77,10 @@ p5.RendererGL.prototype.camera = function(
     upZ = 0;
   }
 
+  this.cameraTargetX = centerX;
+  this.cameraTargetY = centerY;
+  this.cameraTargetZ = centerZ;
+
   this.cameraX = eyeX;
   this.cameraY = eyeY;
   this.cameraZ = eyeZ;
