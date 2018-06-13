@@ -40,6 +40,12 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
   this._assert3d('orbitControl');
   p5._validateParameters('orbitControl', arguments);
 
+  // how to do this without messing with user-defined mouse controls?
+  // also, only needs to be called once...
+  document.oncontextmenu = function() {
+    return false;
+  };
+
   if (typeof sensitivityX === 'undefined') {
     sensitivityX = 1;
   }
