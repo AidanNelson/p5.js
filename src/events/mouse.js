@@ -382,6 +382,7 @@ p5.prototype._updateMouseCoords = function() {
   this._setProperty('pmouseY', this.mouseY);
   this._setProperty('pwinMouseX', this.winMouseX);
   this._setProperty('pwinMouseY', this.winMouseY);
+  this._setProperty('pmouseWheelDeltaY', this.mouseWheelDeltaY);
 };
 
 function getMousePos(canvas, w, h, evt) {
@@ -820,7 +821,11 @@ p5.prototype._ondblclick = function(e) {
  * black 50x50 rect moves up and down with vertical scroll. fuschia background
  *
  */
+p5.prototype.mouseWheelDeltaY = 0;
+p5.prototype.pmouseWheelDeltaY = 0;
 p5.prototype._onwheel = function(e) {
+  this._setProperty('mouseWheelDeltaY', e.deltaY);
+  // console.log(e.deltaY);
   var context = this._isGlobal ? window : this;
   if (typeof context.mouseWheel === 'function') {
     e.delta = e.deltaY;
