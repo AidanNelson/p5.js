@@ -823,6 +823,7 @@ p5.prototype._ondblclick = function(e) {
  */
 p5.prototype.mouseWheelDeltaY = 0;
 p5.prototype.pmouseWheelDeltaY = 0;
+
 p5.prototype._onwheel = function(e) {
   this._setProperty('mouseWheelDeltaY', e.deltaY);
   // console.log(e.deltaY);

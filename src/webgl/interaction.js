@@ -40,7 +40,7 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
   this._assert3d('orbitControl');
   p5._validateParameters('orbitControl', arguments);
 
-  // how to do this without messing with user-defined mouse controls?
+  // TODO: how to do this without messing with user-defined mouse controls?
   // also, only needs to be called once...
   document.oncontextmenu = function() {
     return false;
@@ -54,8 +54,6 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
   }
 
   var hasScrolled = this.mouseWheelDeltaY !== this.pmouseWheelDeltaY;
-  // console.log('hasscrolled: ', hasScrolled);
-  console.log('dY: ', this.mouseWheelDeltaY);
 
   if (hasScrolled || this.mouseIsPressed) {
     // camera position
@@ -114,7 +112,7 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
 
       // move along those vectors by amount controlled by mouseX, pmouseY
       var deltaX = -1 * sensitivityX * (this.mouseX - this.pmouseX);
-      var deltaY = 1 * sensitivityY * (this.mouseY - this.pmouseY);
+      var deltaY = -1 * sensitivityY * (this.mouseY - this.pmouseY);
 
       // determine how much to move camera along World XYZ coordinates based on camera view XYZ vectors
       camX += deltaX * x0 + deltaY * y0;
@@ -142,22 +140,19 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
       var camTheta = Math.atan2(diffX, diffZ); // equatorial angle
       var camPhi = Math.acos(Math.max(-1, Math.min(1, diffY / camRadius))); // polar angle
 
-      // zoom scaling with mouseWheel
-      // var zoomScale = 1;
-
-      // if (this.mouseWheelDeltaY > 5) {
-      //   zoomScale -= 0.2;
-      // } else if (this.mouseWheelDelta < -20) {
-      //   zoomScale += 0.2;
-      // }
-      // add mouse movements
-      camTheta += deltaTheta;
-      camPhi += deltaPhi;
-
-      // camRadius *= zoomScale;
-      if (this.mouseWheelDeltaY > 5 || this.mouseWheelDeltaY < -5) {
-        camRadius += this.mouseWheelDeltaY;
+      if (this.mouseButton === this.LEFT) {
+        // add mouse movements
+        camTheta += deltaTheta;
+        camPhi += deltaPhi;
       }
+
+      // TODO: how to properly scale zooming to deltavalues?
+      if (this.mouseWheelDeltaY > 1) {
+        camRadius += 10;
+      } else if (this.mouseWheelDeltaY < -1) {
+        camRadius -= 10;
+      }
+
       // check for too-small and too-large radius values
       if (camRadius > 2000) {
         camRadius = 2000;
