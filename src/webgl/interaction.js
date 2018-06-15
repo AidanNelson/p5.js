@@ -140,17 +140,23 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
       var camTheta = Math.atan2(diffX, diffZ); // equatorial angle
       var camPhi = Math.acos(Math.max(-1, Math.min(1, diffY / camRadius))); // polar angle
 
+      // this avoids rotation in cases when user has scrolled (zoomed) but not
+      // clicked left mousebutton
       if (this.mouseButton === this.LEFT) {
         // add mouse movements
         camTheta += deltaTheta;
         camPhi += deltaPhi;
       }
 
+      // this second if-statement prevents additional zooming behavior where mousewheel deltavalues
+      // don't return all the way to 0...
       // TODO: how to properly scale zooming to deltavalues?
-      if (this.mouseWheelDeltaY > 1) {
-        camRadius += 10;
-      } else if (this.mouseWheelDeltaY < -1) {
-        camRadius -= 10;
+      if (hasScrolled) {
+        if (this.mouseWheelDeltaY > 1) {
+          camRadius += 10;
+        } else if (this.mouseWheelDeltaY < -1) {
+          camRadius -= 10;
+        }
       }
 
       // check for too-small and too-large radius values
