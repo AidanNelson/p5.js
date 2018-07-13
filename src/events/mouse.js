@@ -386,6 +386,9 @@ p5.prototype._updateMouseCoords = function() {
   this._setProperty('pmouseY', this.mouseY);
   this._setProperty('pwinMouseX', this.winMouseX);
   this._setProperty('pwinMouseY', this.winMouseY);
+
+  // for use with webGL orbitControl():
+  this._setProperty('_pmouseWheelDeltaY', this._mouseWheelDeltaY);
 };
 
 function getMousePos(canvas, w, h, evt) {
@@ -783,6 +786,10 @@ p5.prototype._ondblclick = function(e) {
   }
 };
 
+// private variables for use with webGL orbitControl:
+p5.prototype._mouseWheelDeltaY;
+p5.prototype._pmouseWheelDeltaY;
+
 /**
  * The function <a href="#/p5/mouseWheel">mouseWheel()</a> is executed every time a vertical mouse wheel
  * event is detected either triggered by an actual mouse wheel or by a
@@ -824,8 +831,10 @@ p5.prototype._ondblclick = function(e) {
  * black 50x50 rect moves up and down with vertical scroll. fuschia background
  *
  */
+
 p5.prototype._onwheel = function(e) {
   var context = this._isGlobal ? window : this;
+  this._setProperty('_mouseWheelDeltaY', e.deltaY);
   if (typeof context.mouseWheel === 'function') {
     e.delta = e.deltaY;
     var executeDefault = context.mouseWheel(e);
