@@ -87,7 +87,6 @@ p5.RendererGL = function(elt, pInst, isMainCanvas, attr) {
 
   // Camera
   this._curCamera = new p5.Camera(this);
-  this._curCamera._computeCameraDefaultSettings();
   this._curCamera._setDefaultCamera();
 
   //Geometry & Material hashes

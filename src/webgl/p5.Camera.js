@@ -196,8 +196,7 @@ p5.prototype.createCamera = function() {
   this._assert3d('createCamera');
   var _cam = new p5.Camera(this._renderer);
 
-  // compute default camera settings, then set a default camera
-  _cam._computeCameraDefaultSettings();
+  // set a default camera
   _cam._setDefaultCamera();
 
   // set renderer current camera to the new camera
@@ -303,23 +302,17 @@ p5.Camera = function(renderer) {
  * @for p5.Camera
  */
 p5.Camera.prototype.perspective = function(fovy, aspect, near, far) {
-  if (typeof fovy === 'undefined') {
-    fovy = this.defaultCameraFOV;
-    // this avoids issue where setting angleMode(DEGREES) before calling
-    // perspective leads to a smaller than expected FOV (because
-    // _computeCameraDefaultSettings computes in radians)
-    this.cameraFOV = fovy;
-  } else {
+  if (typeof fovy !== 'undefined') {
     this.cameraFOV = this._renderer._pInst._toRadians(fovy);
   }
-  if (typeof aspect === 'undefined') {
-    aspect = this.defaultAspectRatio;
+  if (typeof aspect !== 'undefined') {
+    this.aspectRatio = aspect;
   }
-  if (typeof near === 'undefined') {
-    near = this.defaultCameraNear;
+  if (typeof near !== 'undefined') {
+    this.cameraNear = near;
   }
-  if (typeof far === 'undefined') {
-    far = this.defaultCameraFar;
+  if (typeof far !== 'undefined') {
+    this.cameraFar = far;
   }
 
   if (near <= 0.0001) {
@@ -337,21 +330,19 @@ p5.Camera.prototype.perspective = function(fovy, aspect, near, far) {
     );
   }
 
-  this.cameraFOV = this._renderer._pInst._toRadians(fovy);
-  this.aspectRatio = aspect;
-  this.cameraNear = near;
-  this.cameraFar = far;
-
   this.projMatrix = p5.Matrix.identity();
 
   var f = 1.0 / Math.tan(this.cameraFOV / 2);
   var nf = 1.0 / (this.cameraNear - this.cameraFar);
 
+  this.projType = 'perspective';
+
   // prettier-ignore
-  this.projMatrix.set(f / aspect,  0,                     0,  0,
-                      0,          -f,                     0,  0,
-                      0,           0,     (far + near) * nf, -1,
-                      0,           0, (2 * far * near) * nf,  0);
+  this.projMatrix.set(
+    f / this.aspectRatio,  0,                                           0,  0,
+                       0, -f,                                           0,  0,
+                       0,  0,     (this.cameraFar + this.cameraNear) * nf, -1,
+                       0,  0, (2 * this.cameraFar * this.cameraNear) * nf,  0);
 
   if (this._isActive()) {
     this._renderer.uPMatrix.set(
@@ -411,6 +402,8 @@ p5.Camera.prototype.ortho = function(left, right, bottom, top, near, far) {
                         0, -y,  0,  0,
                         0,  0,  z,  0,
                         tx, ty, tz,  1);
+
+  this.projType = 'ortho';
 
   if (this._isActive()) {
     this._renderer.uPMatrix.set(
@@ -685,29 +678,19 @@ p5.Camera.prototype.camera = function(
   upY,
   upZ
 ) {
-  if (typeof eyeX === 'undefined') {
-    eyeX = this.defaultEyeX;
-    eyeY = this.defaultEyeY;
-    eyeZ = this.defaultEyeZ;
-    centerX = eyeX;
-    centerY = eyeY;
-    centerZ = 0;
-    upX = 0;
-    upY = 1;
-    upZ = 0;
+  if (typeof eyeX !== 'undefined') {
+    this.eyeX = eyeX;
+    this.eyeY = eyeY;
+    this.eyeZ = eyeZ;
+
+    this.centerX = centerX;
+    this.centerY = centerY;
+    this.centerZ = centerZ;
+
+    this.upX = upX;
+    this.upY = upY;
+    this.upZ = upZ;
   }
-
-  this.eyeX = eyeX;
-  this.eyeY = eyeY;
-  this.eyeZ = eyeZ;
-
-  this.centerX = centerX;
-  this.centerY = centerY;
-  this.centerZ = centerZ;
-
-  this.upX = upX;
-  this.upY = upY;
-  this.upZ = upZ;
 
   var local = this._getLocalAxes();
 
@@ -720,9 +703,9 @@ p5.Camera.prototype.camera = function(
                         local.x[2], local.y[2], local.z[2], 0,
                                  0,          0,          0, 1);
 
-  var tx = -eyeX;
-  var ty = -eyeY;
-  var tz = -eyeZ;
+  var tx = -this.eyeX;
+  var ty = -this.eyeY;
+  var tz = -this.eyeZ;
 
   this.cameraMatrix.translate([tx, ty, tz]);
 
@@ -887,38 +870,26 @@ p5.Camera.prototype.setPosition = function(x, y, z) {
 // Camera Helper Methods
 ////////////////////////////////////////////////////////////////////////////////
 
-// @TODO: combine this function with _setDefaultCamera to compute these values
-// as-needed
-p5.Camera.prototype._computeCameraDefaultSettings = function() {
-  this.defaultCameraFOV = 60 / 180 * Math.PI;
-  this.defaultAspectRatio = this._renderer.width / this._renderer.height;
-  this.defaultEyeX = 0;
-  this.defaultEyeY = 0;
-  this.defaultEyeZ =
-    this._renderer.height / 2.0 / Math.tan(this.defaultCameraFOV / 2.0);
-  this.defaultCenterX = 0;
-  this.defaultCenterY = 0;
-  this.defaultCenterZ = 0;
-  this.defaultCameraNear = this.defaultEyeZ * 0.1;
-  this.defaultCameraFar = this.defaultEyeZ * 10;
-};
-
 //detect if user didn't set the camera
 //then call this function below
 p5.Camera.prototype._setDefaultCamera = function() {
-  this.cameraFOV = this.defaultCameraFOV;
-  this.aspectRatio = this.defaultAspectRatio;
-  this.eyeX = this.defaultEyeX;
-  this.eyeY = this.defaultEyeY;
-  this.eyeZ = this.defaultEyeZ;
-  this.centerX = this.defaultCenterX;
-  this.centerY = this.defaultCenterY;
-  this.centerZ = this.defaultCenterZ;
+  this.cameraFOV = 60 / 180 * Math.PI;
+  this.aspectRatio = this._renderer.width / this._renderer.height;
+
+  this.eyeX = 0;
+  this.eyeY = 0;
+  this.eyeZ = this._renderer.height / 2.0 / Math.tan(this.cameraFOV / 2.0);
+
+  this.centerX = 0;
+  this.centerY = 0;
+  this.centerZ = 0;
+
   this.upX = 0;
   this.upY = 1;
   this.upZ = 0;
-  this.cameraNear = this.defaultCameraNear;
-  this.cameraFar = this.defaultCameraFar;
+
+  this.cameraNear = this.eyeZ * 0.1;
+  this.cameraFar = this.eyeZ * 10;
 
   this.perspective();
   this.camera();
@@ -927,15 +898,16 @@ p5.Camera.prototype._setDefaultCamera = function() {
 };
 
 p5.Camera.prototype._resize = function() {
-  // If we're using the default camera, update the aspect ratio
   if (this.cameraType === 'default') {
-    this._computeCameraDefaultSettings();
     this._setDefaultCamera();
   } else {
-    this.perspective(
-      this.cameraFOV,
-      this._renderer.width / this._renderer.height
-    );
+    if (this.projType === 'perspective') {
+      this.aspectRatio = this._renderer.width / this._renderer.height;
+      this.perspective();
+    }
+    if (this.projType === 'ortho') {
+      this.ortho();
+    }
   }
 };
 
