@@ -87,8 +87,6 @@ p5.prototype.orbitControl = function(sensitivityX, sensitivityY) {
         camPhi = 0.001;
       }
 
-      // change radius based on mouseWheel movement
-      // var deltaRadius = this._mouseWheelDeltaY - this._pmouseWheelDeltaY;
       // from https://github.com/mrdoob/three.js/blob/dev/src/math/Vector3.js#L628-L632
       // var sinPhiRadius = Math.sin(camPhi) * camRadius;
       var _x = Math.sin(camPhi) * camRadius * Math.sin(camTheta);
